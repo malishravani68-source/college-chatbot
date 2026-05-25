@@ -1,0 +1,51 @@
+{
+  "intents": [
+    {
+      "tag": "admission",
+      "patterns": [
+        "How to take admission",
+        "Admission process",
+        "How can I apply"
+      ],
+      "responses": [
+        "You can apply online through college admission portal."
+      ]
+    },
+
+    {
+      "tag": "fees",
+      "patterns": [
+        "What is fees",
+        "Tell me fee structure",
+        "Computer department fees"
+      ],
+      "responses": [
+        "Computer department fees is ₹25,000 per year."
+      ]
+    },
+
+    {
+      "tag": "hostel",
+      "patterns": [
+        "Is hostel available",
+        "Hostel facility",
+        "Tell me about hostel"
+      ],
+      "responses": [
+        "Yes, hostel facility is available for boys and girls."
+      ]
+    },
+
+    {
+      "tag": "placement",
+      "patterns": [
+        "Placement companies",
+        "Placement details",
+        "Do companies visit"
+      ],
+      "responses": [
+        "Yes, many IT companies visit our college every year."
+      ]
+    }
+  ]
+}

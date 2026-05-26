@@ -2,33 +2,31 @@ import streamlit as st
 import pickle
 import json
 import random
+import os
 
-# Load model
-model = pickle.load(open("model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load model safely
+model_path = os.path.join(BASE_DIR, "model.pkl")
+vectorizer_path = os.path.join(BASE_DIR, "vectorizer.pkl")
+
+model = pickle.load(open(model_path, "rb"))
+vectorizer = pickle.load(open(vectorizer_path, "rb"))
 
 # Load dataset
-with open("intents.json") as file:
+json_path = os.path.join(BASE_DIR, "intents.json")
+with open(json_path) as file:
     data = json.load(file)
 
-# Page title
 st.title("🎓 College Enquiry Chatbot")
 
-st.write("Ask any college related questions")
+user_input = st.text_input("Ask your question:")
 
-# User input
-user_input = st.text_input("You:")
-
-# Button
 if st.button("Send"):
 
-    # Convert input into vector
     X = vectorizer.transform([user_input])
-
-    # Predict tag
     prediction = model.predict(X)[0]
 
-    # Find response
     response = "Sorry, I don't understand."
 
     for intent in data["intents"]:

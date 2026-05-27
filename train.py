@@ -3,7 +3,7 @@ import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
-# Load dataset
+# Load intents
 with open("intents.json") as file:
     data = json.load(file)
 
@@ -15,7 +15,7 @@ for intent in data["intents"]:
         texts.append(pattern)
         labels.append(intent["tag"])
 
-# Convert text into vectors
+# Vectorization
 vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(texts)
 
@@ -27,4 +27,4 @@ model.fit(X, labels)
 pickle.dump(model, open("model.pkl", "wb"))
 pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
-print("Model trained successfully!")
+print("Model trained successfully")

@@ -1,63 +1,71 @@
 import os
-import pickle
 import json
 import random
+import pickle
 import streamlit as st
 
-# -----------------------------
-# Load files
-# -----------------------------
+# --------------------------------
+# Create model if not exists
+# --------------------------------
 
-BASE_DIR = os.path.dirname(__file__)
+if not os.path.exists("model.pkl"):
 
-model_path = os.path.join(BASE_DIR, "model.pkl")
-vectorizer_path = os.path.join(BASE_DIR, "vectorizer.pkl")
-intents_path = os.path.join(BASE_DIR, "intents.json")
+    from sklearn.feature_extraction.text import CountVectorizer
+    from sklearn.naive_bayes import MultinomialNB
 
-# Load ML model
-with open(model_path, "rb") as f:
-    model = pickle.load(f)
+    # Load intents
+    with open("intents.json") as file:
+        data = json.load(file)
 
-# Load vectorizer
-with open(vectorizer_path, "rb") as f:
-    vectorizer = pickle.load(f)
+    texts = []
+    labels = []
+
+    for intent in data["intents"]:
+        for pattern in intent["patterns"]:
+            texts.append(pattern)
+            labels.append(intent["tag"])
+
+    # Vectorize text
+    vectorizer = CountVectorizer()
+    X = vectorizer.fit_transform(texts)
+
+    # Train model
+    model = MultinomialNB()
+    model.fit(X, labels)
+
+    # Save files
+    pickle.dump(model, open("model.pkl", "wb"))
+    pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
+
+# --------------------------------
+# Load model
+# --------------------------------
+
+model = pickle.load(open("model.pkl", "rb"))
+vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # Load intents
-with open(intents_path, "r") as f:
-    intents = json.load(f)
+with open("intents.json") as file:
+    data = json.load(file)
 
-# -----------------------------
+# --------------------------------
 # Streamlit UI
-# -----------------------------
-
-st.set_page_config(page_title="College Chatbot")
+# --------------------------------
 
 st.title("🎓 College Enquiry Chatbot")
 
-st.write("Ask any college-related question.")
-
-# User input
-user_input = st.text_input("Enter your question")
-
-# -----------------------------
-# Chatbot Logic
-# -----------------------------
+user_input = st.text_input("Ask your question")
 
 if user_input:
 
-    # Convert user text into vector
     X = vectorizer.transform([user_input])
 
-    # Predict tag
     prediction = model.predict(X)[0]
 
     response = "Sorry, I don't understand."
 
-    # Find matching response
-    for intent in intents["intents"]:
+    for intent in data["intents"]:
         if intent["tag"] == prediction:
             response = random.choice(intent["responses"])
-            break
 
-    # Show response
     st.success(response)
